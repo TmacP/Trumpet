@@ -9,8 +9,8 @@ game_binding = /input/game.input_bindingc
 use_accelerometer = 0
 
 [display]
-width = 640
-height = 360
+width = 360
+height = 640
 high_dpi = 1
 
 [script]

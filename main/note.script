@@ -1,0 +1,48 @@
+local variations = {
+	[0] = {false, false, false}, -- All off
+	[1] = {true, false, false},  -- 100
+	[2] = {false, true, false},  -- 010
+	[3] = {true, true, false},   -- 110
+	[4] = {false, false, true},  -- 001
+	[5] = {true, false, true},   -- 101
+	[6] = {false, true, true},   -- 011
+	[7] = {true, true, true},    -- 111
+}
+
+function init(self)
+	-- Initialize note variables if needed
+end
+
+function set_variation(self, variation)
+	local states = variations[variation]
+	if states then
+		if states[1] then
+			msg.post("#sprite1", "enable")
+		else
+			msg.post("#sprite1", "disable")
+		end
+
+		if states[2] then
+			msg.post("#sprite2", "enable")
+		else
+			msg.post("#sprite2", "disable")
+		end
+
+		if states[3] then
+			msg.post("#sprite3", "enable")
+		else
+			msg.post("#sprite3", "disable")
+		end
+	else
+		print("Invalid variation: " .. tostring(variation))
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("set_variation") then
+		set_variation(self, message.variation)
+	elseif message_id == hash("on_hit") then
+		print("Note was hit!")
+		-- Additional hit logic can go here
+	end
+end
