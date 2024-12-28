@@ -1,0 +1,63 @@
+local conductor = require "main.conductor"
+
+function init(self)
+	-- Acquire input and set up projection
+	msg.post(".", "acquire_input_focus")
+	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
+
+	-- Play the song
+	sound.play("song#sound")
+
+	-- Initialize variables for spawning
+	self.spawn_interval = conductor.get_crotchet()
+	self.time_since_last_spawn = 0
+	self.factory_url = "#note" -- Factory URL
+
+	-- Table to keep track of spawned notes
+	self.notes = {}
+	self.note_speed = 200 -- Pixels per second, adjust as needed
+end
+
+function update(self, dt)
+	-- Update conductor timing
+	conductor.update(dt)
+
+	-- Update time since the last note spawn
+	self.time_since_last_spawn = self.time_since_last_spawn + dt
+
+	if self.time_since_last_spawn >= self.spawn_interval then
+		-- Spawn a note
+		local note_id = factory.create(self.factory_url, vmath.vector3(100, 600, 0)) -- Adjust position as needed
+		table.insert(self.notes, note_id) -- Track the note
+		self.time_since_last_spawn = 0
+		print("Note spawned!")
+	end
+
+	-- Move notes
+	for i = #self.notes, 1, -1 do
+		local note_id = self.notes[i]
+		if go.exists(note_id) then
+			-- Move the note downward
+			local position = go.get_position(note_id)
+			position.y = position.y - (self.note_speed * dt)
+			go.set_position(position, note_id)
+
+			-- Remove notes that move off-screen
+			if position.y < -50 then -- Adjust based on screen size
+				go.delete(note_id)
+				table.remove(self.notes, i)
+				print("Note removed!")
+			end
+		else
+			-- Remove invalid notes from the list
+			table.remove(self.notes, i)
+		end
+	end
+end
+
+function on_input(self, action_id, action)
+	-- Handle touch input
+	if action_id == hash("touch") and action.pressed then
+		print("Touch detected!")
+	end
+end
