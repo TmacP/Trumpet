@@ -3,6 +3,14 @@ instances {
   id: "song"
   prototype: "/main/song.go"
 }
+instances {
+  id: "note"
+  prototype: "/main/note.go"
+  position {
+    x: 120.0
+    y: 180.0
+  }
+}
 scale_along_z: 0
 embedded_instances {
   id: "GameManager"
