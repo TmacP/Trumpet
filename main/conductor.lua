@@ -41,4 +41,9 @@ function conductor.snap_to_beat(time)
 	return math.floor((time + conductor.offset) / crotchet) * crotchet
 end
 
+function conductor.get_bpm()
+	return conductor.bpm
+end
+
+
 return conductor

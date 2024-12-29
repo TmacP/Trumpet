@@ -16,9 +16,6 @@ embedded_components {
   "  texture: \"/main/main.atlas\"\n"
   "}\n"
   ""
-  position {
-    z: 1.0
-  }
   scale {
     x: 0.5
     y: 0.5
@@ -40,7 +37,6 @@ embedded_components {
   ""
   position {
     x: 80.0
-    z: 1.0
   }
   scale {
     x: 0.5
@@ -63,7 +59,6 @@ embedded_components {
   ""
   position {
     x: 160.0
-    z: 1.0
   }
   scale {
     x: 0.5

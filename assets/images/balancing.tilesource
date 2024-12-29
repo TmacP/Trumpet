@@ -1,0 +1,35 @@
+image: "/assets/images/all.png"
+tile_width: 39
+tile_height: 53
+animations {
+  id: "balancing"
+  start_tile: 9
+  end_tile: 16
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+}
+animations {
+  id: "hips"
+  start_tile: 17
+  end_tile: 24
+  fps: 10
+}
+animations {
+  id: "skip"
+  start_tile: 25
+  end_tile: 32
+  fps: 10
+}
+animations {
+  id: "slide"
+  start_tile: 33
+  end_tile: 40
+  fps: 10
+}
+animations {
+  id: "snap"
+  start_tile: 1
+  end_tile: 8
+  fps: 10
+}
+extrude_borders: 2

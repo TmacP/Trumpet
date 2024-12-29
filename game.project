@@ -29,7 +29,12 @@ input_method = HiddenInputField
 gravity_y = -1000.0
 scale = 0.01
 velocity_threshold = 100.0
+debug = 1
 
 [html5]
 scale_mode = stretch
+
+[graphics]
+default_texture_min_filter = nearest
+default_texture_mag_filter = nearest
 

@@ -1,19 +1,20 @@
 name: "main"
 instances {
-  id: "song"
-  prototype: "/main/song.go"
+  id: "trigger"
+  prototype: "/main/trigger.go"
+  position {
+    x: 100.0
+    y: 540.0
+  }
 }
 instances {
-  id: "note"
-  prototype: "/main/note.go"
-  position {
-    x: 120.0
-    y: 180.0
-  }
+  id: "song"
+  prototype: "/main/song.go"
 }
 scale_along_z: 0
 embedded_instances {
   id: "GameManager"
+  children: "song"
   data: "components {\n"
   "  id: \"main\"\n"
   "  component: \"/main/main.script\"\n"
@@ -21,6 +22,24 @@ embedded_instances {
   "components {\n"
   "  id: \"note\"\n"
   "  component: \"/main/note.factory\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"sprite\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"default_animation: \\\"slide\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "textures {\\n"
+  "  sampler: \\\"texture_sampler\\\"\\n"
+  "  texture: \\\"/assets/images/balancing.tilesource\\\"\\n"
+  "}\\n"
+  "\"\n"
+  "  position {\n"
+  "    x: -464.0\n"
+  "  }\n"
+  "  scale {\n"
+  "    x: 5.0\n"
+  "    y: 5.0\n"
+  "  }\n"
   "}\n"
   ""
   position {
