@@ -16,22 +16,40 @@ end
 function set_variation(self, variation)
 	local states = variations[variation]
 	if states then
-		if states[1] then
+		-- Ensure that sprites are enabled even when all states are false
+		if variation == 0 then
+			-- If all are false, we still enable the sprites but change their appearance
 			msg.post("#sprite1", "enable")
-		else
-			msg.post("#sprite1", "disable")
-		end
-
-		if states[2] then
 			msg.post("#sprite2", "enable")
-		else
-			msg.post("#sprite2", "disable")
-		end
-
-		if states[3] then
 			msg.post("#sprite3", "enable")
+			-- Apply a special tint (e.g., red) to indicate that they are all "off"
+			go.set("#sprite1", "tint", vmath.vector4(1, 0, 0, 1))  -- red
+			go.set("#sprite2", "tint", vmath.vector4(1, 0, 0, 1))  -- red
+			go.set("#sprite3", "tint", vmath.vector4(1, 0, 0, 1))  -- red
 		else
-			msg.post("#sprite3", "disable")
+			-- Enable/disable sprites based on the current variation
+			if states[1] then
+				msg.post("#sprite1", "enable")
+			else
+				msg.post("#sprite1", "disable")
+			end
+
+			if states[2] then
+				msg.post("#sprite2", "enable")
+			else
+				msg.post("#sprite2", "disable")
+			end
+
+			if states[3] then
+				msg.post("#sprite3", "enable")
+			else
+				msg.post("#sprite3", "disable")
+			end
+
+			-- Reset the sprite appearance to normal (optional)
+			go.set("#sprite1", "tint", vmath.vector4(1, 1, 1, 1))  -- reset to white
+			go.set("#sprite2", "tint", vmath.vector4(1, 1, 1, 1))  -- reset to white
+			go.set("#sprite3", "tint", vmath.vector4(1, 1, 1, 1))  -- reset to white
 		end
 	else
 		print("Invalid variation: " .. tostring(variation))
