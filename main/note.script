@@ -1,52 +1,29 @@
 local variations = {
-	[1] = {true, false, false},  -- 100
-	[2] = {false, true, false},  -- 010
-	[3] = {false, false, true},  -- 001
+	[1] = {true, false, false},
+	[2] = {false, true, false},
+	[3] = {false, false, true},
 }
 
 function init(self)
-	-- Initialize note variables
-	self.variation = nil
-	self.hit = false
-
-	-- Acquire input focus for collision handling
 	msg.post(".", "acquire_input_focus")
-end
-
-function set_variation(self, variation)
-	-- Update the variation for the note
-	self.variation = variation
-	local states = variations[variation]
-	if not states then
-		print("Invalid variation: " .. tostring(variation))
-		return
-	end
-
-	-- Enable/disable sprites based on the current variation
-	msg.post("#sprite1", states[1] and "enable" or "disable")
-	msg.post("#sprite2", states[2] and "enable" or "disable")
-	msg.post("#sprite3", states[3] and "enable" or "disable")
-
+	self.variation = nil
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("set_variation") then
-		-- Update the note's variation when receiving this message
-		set_variation(self, message.variation)
-
-	elseif message_id == hash("check_hit") then
-		-- Check if the player's variation matches the note's variation
-		local selected_variation = message.variation
-		if self.variation == selected_variation and not self.hit then
-			print("Hit detected with variation: " .. tostring(self.variation))
-			self.hit = true
-			msg.post(sender, "on_hit") -- Notify the sender of a successful hit
-			go.delete()  -- Remove the note after it's hit
+		self.variation = message.variation
+		local states = variations[self.variation]
+		if not states then
+			print("Invalid variation: " .. tostring(self.variation))
+			return
 		end
-	end
-end
 
-function on_hit(self)
-	-- This function can be used for additional hit logic (e.g., visual feedback, scoring)
-	print("Note was hit!")
+		-- Directly enable/disable sprites and colliders
+		msg.post("#sprite1", states[1] and "enable" or "disable")
+		msg.post("#collisionobject1", states[1] and "enable" or "disable")
+		msg.post("#sprite2", states[2] and "enable" or "disable")
+		msg.post("#collisionobject2", states[2] and "enable" or "disable")
+		msg.post("#sprite3", states[3] and "enable" or "disable")
+		msg.post("#collisionobject3", states[3] and "enable" or "disable")
+	end
 end

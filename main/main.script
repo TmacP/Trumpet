@@ -1,72 +1,54 @@
 local conductor = require "main.conductor"
 
-local speed = 150
+local speed = 350
 
--- Completion callback function to be called when the animation finishes
 local function flipbook_done(self)
-	-- Play the "balancing" animation once the current one finishes
 	msg.post("GameManager#sprite", "play_animation", { id = hash("balancing"), playback = "once_forward" })
 end
 
 function init(self)
-	-- Acquire input and set up projection
 	msg.post(".", "acquire_input_focus")
 	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
-	msg.post("GameManager#sprite", "play_animation", { id = hash("balancing"), playback = "once_forward" })
-	-- Play the song with a callback function
+	msg.post("GameManager#sprite", "play_animation", { id = hash("balancing"), playback = "loop" })
+
 	sound.play("song#sound", {}, function(self, message_id, message, sender)
 		if message_id == hash("sound_done") then
 			print("Sound has finished playing!")
-			on_sound_done(self) -- Handle the end of the song
+			on_sound_done(self)
 		elseif message_id == hash("sound_stopped") then
 			print("Sound was stopped manually.")
 		end
 	end)
 
-	-- Initialize variables
 	self.spawn_interval = conductor.get_crotchet()
 	self.time_since_last_spawn = 0
-	self.factory_url = "#note" -- Note factory URL
-	self.notes = {} -- Table for tracking spawned notes
-	self.note_speed = speed -- Speed of the falling notes
+	self.factory_url = "#note"
+	self.notes = {}
+	self.note_speed = speed
 
-	-- Input tracking
 	self.isLeftPressed = false
 	self.isRightPressed = false
 	self.isDownPressed = false
-
-	-- Animation settings
-	self.default_fps = 30 -- Default FPS for animations
-	self.frames_per_beat = 15 -- Number of frames per beat
 end
 
 function update(self, dt)
-	-- Update conductor timing
 	conductor.update(dt)
-
-	-- Update animation playback rate based on BPM
-	local bpm = conductor.get_bpm() -- Get BPM from the conductor
-	local playback_rate = (self.frames_per_beat * (bpm / 60)) / self.default_fps
-	msg.post("#sprite", "set_playback_rate", { rate = playback_rate })
-
-	-- Spawn notes at regular intervals
 	self.time_since_last_spawn = self.time_since_last_spawn + dt
 	if self.time_since_last_spawn >= self.spawn_interval then
-		local variation = math.random(1, 3) -- Randomly select a variation (1 to 4)
-		local note_id = factory.create(self.factory_url, vmath.vector3(100, -33, 0)) -- Adjust spawn position
-		msg.post(note_id, "set_variation", { variation = variation }) -- Set variation for the note
+		local variation = math.random(1, 3)
+		local note_id = factory.create(self.factory_url, vmath.vector3(100, -33, 0))
+		msg.post(note_id, "set_variation", { variation = variation })
 		table.insert(self.notes, note_id)
 		self.time_since_last_spawn = 0
 	end
 
-	-- Move notes and remove off-screen notes
 	for i = #self.notes, 1, -1 do
 		local note_id = self.notes[i]
 		if go.exists(note_id) then
 			local position = go.get_position(note_id)
 			position.y = position.y + (self.note_speed * dt)
 			go.set_position(position, note_id)
-			if position.y > 640 then -- Off-screen check
+			if position.y > 680 then
 				go.delete(note_id)
 				table.remove(self.notes, i)
 			end
@@ -77,31 +59,30 @@ function update(self, dt)
 end
 
 function on_input(self, action_id, action)
-	-- Track the state of arrow keys
 	if action_id == hash("left") then
 		if action.pressed then
 			self.isLeftPressed = true
-			-- Play "left" animation when pressed and use the callback
 			sprite.play_flipbook("#sprite", "hips", flipbook_done)
+		else
+			self.isLeftPressed = false
 		end
-
 	elseif action_id == hash("right") then
 		if action.pressed then
 			self.isRightPressed = true
-			-- Play "right" animation when pressed and use the callback
 			sprite.play_flipbook("#sprite", "snap", flipbook_done)
+		else
+			self.isRightPressed = false
 		end
-
 	elseif action_id == hash("down") then
 		if action.pressed then
 			self.isDownPressed = true
-			-- Play "down" animation when pressed and use the callback
 			sprite.play_flipbook("#sprite", "slide", flipbook_done)
+		else
+			self.isDownPressed = false
 		end
 	end
 end
 
 function on_sound_done(self)
 	print("Song finished. Handle end-of-song logic here.")
-	-- Example: Transition to results screen or restart gameplay
 end

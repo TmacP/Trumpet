@@ -1,0 +1,54 @@
+local flag = false
+
+function init(self)
+	-- Acquire input focus for detecting player input
+	msg.post(".", "acquire_input_focus")
+	self.selected_variation = nil -- Store the player's selected variation
+	self.trigger_active = false   -- Track if the trigger is active
+end
+
+function on_input(self, action_id, action)
+	-- Handle player input to set the current selected variation
+	if action.pressed then
+		if action_id == hash("left") then
+			self.selected_variation = 1
+		elseif action_id == hash("right") then
+			self.selected_variation = 3
+		elseif action_id == hash("down") then
+			self.selected_variation = 2
+		end
+	end
+	if action.released then
+		self.selected_variation = nil
+	end
+end
+
+-- Trigger the collision detection and variation handling
+function on_message(self, message_id, message, sender)
+	if message_id == hash("trigger_response") then
+
+		flag = not flag
+		--print(flag)
+		
+		local group = message.group
+
+		-- Convert the selected variation to a hash and compare with the group
+		local selected_hash = hash(tostring(self.selected_variation))
+
+		if selected_hash == group and flag then
+			print("YEHAW - Correct variation!")
+		end
+	end
+end
+
+-- Function to activate the trigger (e.g., when the note is near the player)
+function activate_trigger(self)
+	self.trigger_active = true
+	print("Trigger Activated!")
+end
+
+-- Function to deactivate the trigger (e.g., when the note passes or is missed)
+function deactivate_trigger(self)
+	self.trigger_active = false
+	print("Trigger Deactivated!")
+end
