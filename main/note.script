@@ -26,4 +26,10 @@ function on_message(self, message_id, message, sender)
 		msg.post("#sprite3", states[3] and "enable" or "disable")
 		msg.post("#collisionobject3", states[3] and "enable" or "disable")
 	end
+	-- note hit trigger
+	-- so send the trigger which note it was
+	if message_id == hash("trigger_response") then
+		--print("yyy" .. tostring(self.variation))
+		msg.post("/trigger", "note", {self.variation}) 
+	end
 end
